@@ -32,25 +32,20 @@ export default {
     const instanciaWishList = {
       list: wishList,
     };
-    return apiClient.put(
-      "/wishlist/" + id_user + ".json?print=pretty",
-      instanciaWishList
-    );
+    console.log(wishList);
+    return apiClient.put("/wishlist/" + id_user, instanciaWishList);
   },
   getWishList(id_user) {
-    return apiClient.get("/wishlist/" + id_user + ".json?print=pretty");
+    return apiClient.get("/wishlist/?id=" + id_user);
   },
-  async getCarrito(id_user) {
-    return apiClient.get("/carrito/" + id_user + ".json?print=pretty");
+  getCarrito(id_user) {
+    return apiClient.get("/carrito/?id=" + id_user);
   },
   postProductCarrito(carrito, id_user) {
     const instanciaCarrito = {
       list: carrito,
     };
-    return apiClient.put(
-      "/carrito/" + id_user + ".json?print=pretty",
-      instanciaCarrito
-    );
+    return apiClient.put("/carrito/" + id_user, instanciaCarrito);
   },
   postCompra(ISBN, fechaHora, id_user) {
     const nuevaCompra = {

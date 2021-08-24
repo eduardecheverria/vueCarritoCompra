@@ -14,14 +14,14 @@ export const actions = {
   async set_user_action({ commit, dispatch }, username) {
     try {
       const user = await apiClient.getUser(username);
-      if (user.data.length === 0) {
+      if (Object.keys(user.data).length === 0) {
         const error = {
           header: "Error al autenticar",
           description: "Nombre de usuario equivocado",
         };
         dispatch("notification/set_notification_action", error, { root: true });
       } else {
-        commit("SET_USER", user.data[0]);
+        commit("SET_USER", user.data);
 
         dispatch("product/fetch_wishlist", state.user.id, {
           root: true,

@@ -7,7 +7,11 @@
         <th>Fecha de compra</th>
         <th>Producto</th>
       </tr>
-      <tr v-for="compra in compras" :key="compra.id" class="cuerpoTabla">
+      <tr
+        v-for="compra in compras"
+        :key="compra.id + compra.ISBN"
+        class="cuerpoTabla"
+      >
         <td>{{ compra.id }}</td>
         <td>{{ compra.fechaHora }}</td>
         <td

@@ -57,7 +57,7 @@ export default {
     numero_productos_carrito() {
       let numero_productos = 0;
       this.carrito.forEach((element) => {
-        numero_productos = numero_productos + element.copias;
+        numero_productos = numero_productos + parseInt(element.copias);
       });
       return numero_productos;
     },

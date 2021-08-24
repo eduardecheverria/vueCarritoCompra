@@ -58,10 +58,11 @@ export default {
       await this.$store.dispatch("product/enviarWishListCarrito");
     },
     async anadirACarrito(product, index) {
-      console.log(this.numProdReq[index]);
-      for (let i = 0; i < this.numProdReq[index]; i++) {
-        await this.$store.dispatch("product/add_product_carrito", product);
-      }
+      this.$store.dispatch("product/add_product_carrito", {
+        product: product,
+        copias: this.numProdReq[index],
+        tipoAccion: "aumentar",
+      });
       await this.eliminarDeWishList(product);
     },
   },

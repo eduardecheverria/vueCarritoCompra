@@ -77,7 +77,7 @@ export const actions = {
   async fetch_productCompradoByISBN({ commit, dispatch }, ISBN) {
     try {
       const products = await apiClient.getProductByISBN(ISBN);
-      commit("SET_PRODUCTO_COMPRADO", products.data[0]);
+      commit("SET_PRODUCTO_COMPRADO", products.data);
     } catch (err) {
       const error = {
         header: "Error al autenticar",
@@ -128,11 +128,9 @@ export const actions = {
     try {
       const respuesta = await apiClient.getWishList(id_user);
       let newWishList = [];
-      for (let i = 0; i < respuesta.data[0].list.length; i++) {
-        let temporal = await apiClient.getProductByISBN(
-          respuesta.data[0].list[i]
-        );
-        newWishList[i] = temporal.data[0];
+      for (let i = 0; i < respuesta.data.list.length; i++) {
+        let temporal = await apiClient.getProductByISBN(respuesta.data.list[i]);
+        newWishList[i] = temporal.data;
       }
       commit("SET_WISHLIST", newWishList);
     } catch (err) {
@@ -166,11 +164,12 @@ export const actions = {
     try {
       const user = rootState.user.user;
       let newCarrito = [];
-      state.wishList.forEach((element) => {
-        newCarrito.push(element.ISBN);
-      });
+      newCarrito = [...state.wishList];
+      /*state.wishList.forEach((element) => {
+        newCarrito.push({ ISBN: element.ISBN, copias: 1 });
+      });*/
       state.carrito.forEach((element) => {
-        newCarrito.push(element.ISBN);
+        newCarrito.push({ ISBN: element.ISBN, copias: 1 });
       });
       await apiClient.postProductCarrito(newCarrito, user.id);
       commit("MIX_CARRITO", state.wishList);
@@ -203,20 +202,20 @@ export const actions = {
 
       const respuesta = await apiClient.getCarrito(user.id);
       let newCarrito = [];
-      for (let i = 0; i < respuesta.data[0].list.length; i++) {
+      for (let i = 0; i < respuesta.data.list.length; i++) {
         let temporal = await apiClient.getProductByISBN(
-          respuesta.data[0].list[i].ISBN
+          respuesta.data.list[i].ISBN
         );
         const buscarProducto = actualCarrito.find(
-          (element) => element.ISBN === respuesta.data[0].list[i].ISBN
+          (element) => element.ISBN === respuesta.data.list[i].ISBN
         );
         if (buscarProducto !== undefined) {
-          temporal.data[0].copias =
-            respuesta.data[0].list[i].copias + buscarProducto.copias;
+          temporal.data.copias =
+            respuesta.data.list[i].copias + buscarProducto.copias;
         } else {
-          temporal.data[0].copias = respuesta.data[0].list[i].copias;
+          temporal.data.copias = respuesta.data.list[i].copias;
         }
-        newCarrito[i] = temporal.data[0];
+        newCarrito[i] = temporal.data;
       }
       if (actualCarrito.length > 0) {
         await apiClient.postProductCarrito(newCarrito, user.id);
@@ -248,7 +247,7 @@ export const actions = {
       );
       const user = rootState.user.user;
       if (product_copias.length === 0) {
-        newCarritoISBN.push({ ISBN: product.ISBN, copias: 1 });
+        newCarritoISBN.push({ ISBN: product.ISBN, copias: copias });
         if (Object.keys(user).length > 0) {
           await apiClient.postProductCarrito(newCarritoISBN, user.id);
         }
@@ -267,7 +266,6 @@ export const actions = {
         if (Object.keys(user).length > 0) {
           await apiClient.postProductCarrito(newCarritoISBN, user.id);
         }
-        console.log(product);
         commit("ADD_COPY_PRODUCT_CARRITO", {
           product,
           index: index,
