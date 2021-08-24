@@ -55,7 +55,9 @@ export default {
       await this.$store.dispatch("product/eliminarProdWishList", product);
     },
     async enviarTodoCarrito() {
-      await this.$store.dispatch("product/enviarWishListCarrito");
+      await this.$store.dispatch("product/enviarWishListCarrito", {
+        arregloCopiasProductos: this.numProdReq,
+      });
     },
     async anadirACarrito(product, index) {
       this.$store.dispatch("product/add_product_carrito", {

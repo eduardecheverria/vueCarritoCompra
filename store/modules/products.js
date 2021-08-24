@@ -160,19 +160,35 @@ export const actions = {
       dispatch("notification/set_notification_action", error, { root: true });
     }
   },
-  async enviarWishListCarrito({ commit, rootState, dispatch }) {
+  async enviarWishListCarrito(
+    { commit, rootState, dispatch },
+    { arregloCopiasProductos }
+  ) {
     try {
       const user = rootState.user.user;
-      let newCarrito = [];
-      newCarrito = [...state.wishList];
-      /*state.wishList.forEach((element) => {
-        newCarrito.push({ ISBN: element.ISBN, copias: 1 });
-      });*/
-      state.carrito.forEach((element) => {
-        newCarrito.push({ ISBN: element.ISBN, copias: 1 });
+      let DataBaseNewCarrito = [];
+      let LocalStateNewCarrito = [];
+      state.wishList.forEach(async (element, index) => {
+        DataBaseNewCarrito.push({
+          ISBN: element.ISBN,
+          copias: arregloCopiasProductos[index],
+        });
+        let temporalProduct = await apiClient.getProductByISBN(element.ISBN);
+        LocalStateNewCarrito.push({
+          ISBN: element.ISBN,
+          copias: arregloCopiasProductos[index],
+          costo: temporalProduct.data.costo,
+          autor: temporalProduct.data.autor,
+          descripcion: temporalProduct.data.descripcion,
+          src: temporalProduct.data.src,
+          title: temporalProduct.data.title,
+        });
       });
-      await apiClient.postProductCarrito(newCarrito, user.id);
-      commit("MIX_CARRITO", state.wishList);
+      state.carrito.forEach((element) => {
+        DataBaseNewCarrito.push({ ISBN: element.ISBN, copias: element.copias });
+      });
+      await apiClient.postProductCarrito(DataBaseNewCarrito, user.id);
+      commit("MIX_CARRITO", LocalStateNewCarrito);
       dispatch("eliminarWishList");
     } catch (err) {
       const error = {
