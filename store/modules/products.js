@@ -127,12 +127,18 @@ export const actions = {
   async fetch_wishlist({ commit, dispatch }, id_user) {
     try {
       const respuesta = await apiClient.getWishList(id_user);
-      let newWishList = [];
-      for (let i = 0; i < respuesta.data.list.length; i++) {
-        let temporal = await apiClient.getProductByISBN(respuesta.data.list[i]);
-        newWishList[i] = temporal.data;
+      if (respuesta.data != null) {
+        let newWishList = [];
+        for (let i = 0; i < respuesta.data.list.length; i++) {
+          let temporal = await apiClient.getProductByISBN(
+            respuesta.data.list[i]
+          );
+          newWishList[i] = temporal.data;
+        }
+        commit("SET_WISHLIST", newWishList);
+      } else {
+        commit("SET_WISHLIST", []);
       }
-      commit("SET_WISHLIST", newWishList);
     } catch (err) {
       const error = {
         header: "Error al obtener su WishList",
@@ -217,26 +223,35 @@ export const actions = {
       const actualCarrito = state.carrito;
 
       const respuesta = await apiClient.getCarrito(user.id);
-      let newCarrito = [];
-      for (let i = 0; i < respuesta.data.list.length; i++) {
-        let temporal = await apiClient.getProductByISBN(
-          respuesta.data.list[i].ISBN
-        );
-        const buscarProducto = actualCarrito.find(
-          (element) => element.ISBN === respuesta.data.list[i].ISBN
-        );
-        if (buscarProducto !== undefined) {
-          temporal.data.copias =
-            respuesta.data.list[i].copias + buscarProducto.copias;
-        } else {
-          temporal.data.copias = respuesta.data.list[i].copias;
+      if (respuesta.data != null) {
+        let newCarrito = [];
+        for (let i = 0; i < respuesta.data.list.length; i++) {
+          let temporal = await apiClient.getProductByISBN(
+            respuesta.data.list[i].ISBN
+          );
+          const buscarProducto = actualCarrito.find(
+            (element) => element.ISBN === respuesta.data.list[i].ISBN
+          );
+          if (buscarProducto !== undefined) {
+            temporal.data.copias =
+              respuesta.data.list[i].copias + buscarProducto.copias;
+          } else {
+            temporal.data.copias = respuesta.data.list[i].copias;
+          }
+          newCarrito[i] = temporal.data;
         }
-        newCarrito[i] = temporal.data;
+        if (actualCarrito.length > 0) {
+          await apiClient.postProductCarrito(newCarrito, user.id);
+        }
+        if (actualCarrito.length === 0) {
+          commit("SET_CARRITO", newCarrito);
+        } else {
+          commit("MIX_CARRITO", newCarrito);
+          await apiClient.postProductCarrito(state.carrito, user.id);
+        }
+      } else {
+        commit("SET_CARRITO", []);
       }
-      if (actualCarrito.length > 0) {
-        await apiClient.postProductCarrito(newCarrito, user.id);
-      }
-      commit("SET_CARRITO", newCarrito);
     } catch (err) {
       const error = {
         header: "Error al obtener su Carrito",
