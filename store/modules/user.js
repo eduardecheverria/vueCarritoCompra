@@ -29,6 +29,7 @@ export const actions = {
         dispatch("product/fetch_carrito", state.user.id, {
           root: true,
         });
+        localStorage.setItem("576987", username);
       }
     } catch (err) {
       const error = {
@@ -42,6 +43,7 @@ export const actions = {
     dispatch("compras/cerrar_sesion", {}, { root: true });
     dispatch("product/cerrar_sesion", {}, { root: true });
     commit("SET_USER", {});
+    localStorage.removeItem("576987");
   },
   async update_user({ commit, dispatch }, objetoUsuario) {
     try {

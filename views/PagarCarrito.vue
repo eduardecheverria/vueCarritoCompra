@@ -110,7 +110,7 @@
                   />
                 </div>
                 <div class="inputContainer inputLargo">
-                  <label for="direccion">*Dirección</label>
+                  <label for="direccion">*Vigencia</label>
                   <div class="fecha_expiracion">
                     <select
                       v-model="tarjetaVigenciaMes"

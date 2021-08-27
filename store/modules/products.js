@@ -12,10 +12,11 @@ export const state = {
 };
 export const mutations = {
   SET_PRODUCTS(state, products) {
-    state.products = products;
+    Object.keys(products).map((key) => state.products.push(products[key]));
+    //because we recieve the data as an object
   },
   SET_SEARCH_VALUE(state, search_value) {
-    state.search_value = search_value;
+    state.search_value = search_value.toLowerCase();
   },
   ELIMINAR_COMPRAS(state) {
     state.productos_comprados = [];
@@ -377,11 +378,11 @@ export const getters = {
     if (state.search_value === "") {
       return state.products;
     } else {
-      const products_filtered = state.products.filter((product) => {
+      let products_filtered = state.products.filter((product) => {
         return (
-          product.title.includes(state.search_value) ||
-          product.ISBN.includes(state.search_value) ||
-          product.autor.includes(state.search_value)
+          product.title.toLowerCase().includes(state.search_value) ||
+          product.ISBN.toLowerCase().includes(state.search_value) ||
+          product.autor.toLowerCase().includes(state.search_value)
         );
       });
       return products_filtered;

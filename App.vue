@@ -23,6 +23,14 @@ export default {
       return this.$store.state.notification.notifications;
     },
   },
+  async mounted() {
+    if (localStorage.getItem("576987") !== null) {
+      await this.$store.dispatch(
+        "user/set_user_action",
+        localStorage.getItem("576987")
+      );
+    }
+  },
 };
 </script>
 
